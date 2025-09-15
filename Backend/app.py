@@ -4,15 +4,15 @@ import cv2, numpy as np
 import base64
 
 app = Flask(__name__)
-CORS(app)  # agar bisa diakses dari frontend lain (localhost)
+CORS(app)  
 
 def detect_color_shape(image):
-    # image: BGR numpy array
+
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     results = []
 
-    # === DETEKSI MERAH ===
+
     lower_red1 = np.array([0,120,70])
     upper_red1 = np.array([10,255,255])
     mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -24,8 +24,7 @@ def detect_color_shape(image):
     mask_red = mask1 + mask2
     results += find_shapes(mask_red, "Red")
 
-    # === DETEKSI KUNING (cerah & gelap) ===
-    # Hue 15–40, S & V minimal 30 agar kuning gelap tetap terdeteksi
+
     lower_yellow = np.array([15, 30, 30])
     upper_yellow = np.array([40, 255, 255])
     mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -39,7 +38,7 @@ def find_shapes(mask, color_name):
     found = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area > 500:  # abaikan noise kecil
+        if area > 500:  
             approx = cv2.approxPolyDP(cnt, 0.04*cv2.arcLength(cnt,True), True)
             x,y,w,h = cv2.boundingRect(cnt)
             shape = "Unknown"
@@ -69,5 +68,5 @@ def detect():
 
 
 if __name__ == "__main__":
-    # Jalankan API di localhost:5000
+
     app.run(host="0.0.0.0", port=5000, debug=True)
